@@ -7,13 +7,6 @@ import java.sql.Statement;
 import java.util.Properties;
 import java.util.Scanner;
 
-
-/**
- * Homework 6
- * Ashna Shah
- */
-
-
 /**
  * This class demonstrates how to connect to MySQL and run some basic commands.
  *
@@ -42,7 +35,7 @@ import java.util.Scanner;
  *
  * java.net.ConnectException: Connection refused
  */
-public class DBDemo {
+public final class Main {
 
   /**
    * The name of the MySQL account to use (or empty for anonymous)
@@ -75,6 +68,226 @@ public class DBDemo {
   private final String tableName = "JDBC_TEST";
 
   /**
+   * Connect to the DB and do some stuff
+   */
+  public static void main(String[] args) {
+    Main main = new Main();
+    main.promptUser();
+  }
+
+  /**
+   * Prompts the user to enter their username and password and sets
+   * the database to be used to starwarsfinal.
+   */
+  public void promptUser() {
+    Scanner scan = new Scanner(System.in);
+    System.out.print("Username: ");
+    userName = scan.nextLine();
+    System.out.print("Password: ");
+    this.password = scan.nextLine();
+    this.dbName = "familyTree";
+    boolean exit = false;
+    do {
+      System.out.println("Choose an operation: Find, Update, Insert, Delete, or Exit.");
+      String operation = scan.nextLine();
+      if (operation.equalsIgnoreCase("find")) {
+        find();
+      }
+    }
+    while (!exit);
+  }
+
+  private void find() {
+    System.out.println("What do you want to find? A person, address, house, reunion," +
+        "or relationship?");
+    Scanner scan = new Scanner(System.in);
+    String toFind = scan.nextLine();
+    if (toFind.equalsIgnoreCase("person")) {
+      findPerson();
+    }
+    else if (toFind.equalsIgnoreCase("address")) {
+      findAddress();
+    }
+    else if (toFind.equalsIgnoreCase("house")) {
+      findHouse();
+    }
+    else if (toFind.equalsIgnoreCase("reunion")) {
+      System.out.println("Would you like to search by date, host, address, or occasion?");
+      String searchBy = scan.next();
+      if (searchBy.equalsIgnoreCase("date")) {
+        findReunionFromDate();
+      }
+      else if (searchBy.equalsIgnoreCase("host")) {
+        findReunionFromPerson();
+      }
+      else if (searchBy.equalsIgnoreCase("address")) {
+        findReunionFromAddress();
+      }
+      else if (searchBy.equalsIgnoreCase("occasion")) {
+        findReunionFromOccasion();
+      }
+    }
+    else if (toFind.equalsIgnoreCase("relationship")) {
+      //TODO: find relationship
+    }
+  }
+
+  /**
+   * Finds a person from the user's input and outputs all of their information.
+   */
+  private void findPerson() {
+    System.out.print("Enter the person's first name: ");
+    Scanner scan = new Scanner(System.in);
+    String person = scan.next();
+    int id = 0;
+    try {
+      id = selectPersonFromFirstName(person);
+    }
+    catch (IllegalArgumentException e) {
+      System.out.println("Couldn't find that person.");
+      findPerson();
+    }
+    try {
+      Statement statement = this.getConnection().createStatement();
+      ResultSet resultSet = statement.executeQuery("SELECT * FROM person WHERE person_id =" + id);
+      ResultSetMetaData rsmd = resultSet.getMetaData();
+      int numColumns = rsmd.getColumnCount();
+      for (int i = 1; i <= numColumns; i++) {
+        System.out.print(resultSet.getString(i) + " ");
+      }
+      System.out.println();
+    }
+    catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Finds the ID of a person from their first name. If there is more than one person
+   * with this name, show a list of all of the people with this name and have the user
+   * select the ID of the person they want.
+   * @param firstName the first name of the person to select
+   * @return the ID of the person that the user wants to select
+   * @throws IllegalArgumentException if the person is not in the database
+   */
+  private int selectPersonFromFirstName(String firstName) throws IllegalArgumentException {
+    int id = 0;
+    try {
+      Statement statement = this.getConnection().createStatement();
+      // count the number of people with this name
+      ResultSet count = statement.executeQuery("SELECT COUNT(*) FROM person WHERE first_name =" +
+          "\'" + firstName + "\'");
+      // select all of the people with this name
+      ResultSet resultSet = statement.executeQuery("SELECT * FROM person WHERE first_name =" +
+          "\'" + firstName + "\'");
+      // if there is only one person with this name, just return their ID
+      if (Integer.parseInt(count.getString(1)) == 1) {
+        id = Integer.parseInt(resultSet.getString(1));
+      }
+      // if there are no people with this name, throw an exception.
+      if (!resultSet.next()) {
+        throw new IllegalArgumentException("Person doesn't exist.");
+      }
+      ResultSetMetaData rsmd = resultSet.getMetaData();
+      int numberColumns = rsmd.getColumnCount();
+      // print all of the people with this name
+      while (resultSet.next()) {
+        for (int i = 1; i <= numberColumns; i++) {
+          System.out.println(resultSet.getString(i) + " ");
+        }
+        System.out.println();
+      }
+      System.out.print("Enter the ID of the person you want to select: ");
+      Scanner scan = new Scanner(System.in);
+      id = scan.nextInt();
+    }
+    catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return id;
+  }
+
+  /**
+   * Finds and prints the address from the user's inputted first name.
+   */
+  private void findAddress() {
+    Scanner scan = new Scanner(System.in);
+    System.out.print("Enter the person's first name: ");
+    String person = scan.next();
+    int id = selectPersonFromFirstName(person);
+    try {
+      Statement statement = this.getConnection().createStatement();
+      ResultSet resultSet = statement.executeQuery("SELECT * FROM address WHERE house_id = " +
+          "(SELECT house_id FROM (person JOIN house ON person_id = " + id + "))");
+      ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+      int numberOfColumns = resultSetMetaData.getColumnCount();
+      while(resultSet.next()) {
+        for (int i = 1; i <= numberOfColumns; i ++) {
+          System.out.println(resultSet.getString(i) + " ");
+        }
+        System.out.println();
+      }
+    }
+    catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Finds and prints the house from the user's inputted first name.
+   */
+  private void findHouse() {
+    Scanner scan = new Scanner(System.in);
+    System.out.print("Enter the person's first name: ");
+    String person = scan.next();
+    int id = selectPersonFromFirstName(person);
+    try {
+      Statement statement = this.getConnection().createStatement();
+      ResultSet resultSet = statement.executeQuery("SELECT * FROM house WHERE person_id = " + id);
+      ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+      int numberOfColumns = resultSetMetaData.getColumnCount();
+      while(resultSet.next()) {
+        for (int i = 1; i <= numberOfColumns; i ++) {
+          System.out.println(resultSet.getString(i) + " ");
+        }
+        System.out.println();
+      }
+    }
+    catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void findReunionFromDate() {
+    //TODO: find reunion from date
+  }
+
+  private void findReunionFromPerson() {
+    System.out.println("What is the first name of the head of the household?");
+    Scanner scan = new Scanner(System.in);
+    String head = scan.next();
+    //TODO: find reunion from person
+  }
+
+  private void findReunionFromAddress() {
+    Scanner scan = new Scanner(System.in);
+    System.out.println("What street is the reunion on?");
+    String street = scan.nextLine();
+    System.out.println("What city is the reunion in?");
+    String city = scan.nextLine();
+    System.out.println("What country is the reunion in?");
+    String country = scan.nextLine();
+    //TODO: find reunion from address
+  }
+
+  private void findReunionFromOccasion() {
+    Scanner scan = new Scanner(System.in);
+    System.out.println("Enter the occasion of the reunion");
+    String occasion = scan.nextLine();
+    //TODO: find reunion from occasion
+  }
+
+  /**
    * Get a new database connection
    */
   public Connection getConnection() throws SQLException {
@@ -83,8 +296,8 @@ public class DBDemo {
     connectionProps.put("user", this.userName);
     connectionProps.put("password", this.password);
     conn = DriverManager.getConnection("jdbc:mysql://"
-            + this.serverName + ":" + this.portNumber + "/" + this.dbName
-            + "?autoReconnect=true&useSSL=false", connectionProps);
+        + this.serverName + ":" + this.portNumber + "/" + this.dbName
+        + "?autoReconnect=true&useSSL=false", connectionProps);
 
     return conn;
   }
@@ -109,139 +322,4 @@ public class DBDemo {
     }
   }
 
-  /**
-   * Connect to MySQL and do some stuff.
-   */
-  public void run() {
-
-    // Connect to MySQL
-    Connection conn = null;
-    try {
-      conn = this.getConnection();
-      System.out.println("Connected to database");
-    } catch (SQLException e) {
-      System.out.println("ERROR: Could not connect to the database");
-      e.printStackTrace();
-      return;
-    }
-
-    // Create a table
-    try {
-      String createString =
-              "CREATE TABLE " + this.tableName + " ( " +
-                      "ID INTEGER NOT NULL, " +
-                      "NAME varchar(40) NOT NULL, " +
-                      "STREET varchar(40) NOT NULL, " +
-                      "CITY varchar(20) NOT NULL, " +
-                      "STATE char(2) NOT NULL, " +
-                      "ZIP char(5), " +
-                      "PRIMARY KEY (ID))";
-      this.executeUpdate(conn, createString);
-      System.out.println("Created a table");
-    } catch (SQLException e) {
-      System.out.println("ERROR: Could not create the table");
-      e.printStackTrace();
-      return;
-    }
-
-    // Drop the table
-    try {
-      String dropString = "DROP TABLE " + this.tableName;
-      this.executeUpdate(conn, dropString);
-      System.out.println("Dropped the table");
-    } catch (SQLException e) {
-      System.out.println("ERROR: Could not drop the table");
-      e.printStackTrace();
-      return;
-    }
-  }
-
-  /**
-   * Prompts the user to enter their username and password and sets
-   * the database to be used to starwarsfinal.
-   */
-  public void promptUser() {
-    Scanner scanner = new Scanner(System.in);
-    System.out.print("Username: ");
-    this.userName = scanner.nextLine();
-    System.out.print("Password: ");
-    this.password = scanner.nextLine();
-    this.dbName = "starwarsfinal";
-  }
-
-  /**
-   * Prompts the user to enter a characterName. If the characterName is within the list of all the
-   * characters, the track_character() function is called and the resultSet is returned.
-   */
-  public void getCharacter() {
-    try {
-      Statement statement = this.getConnection().createStatement();
-      ResultSet resultSet = statement.executeQuery("SELECT character_name FROM characters");
-
-      // Prints out the list of all the characters in the character table.
-      while (resultSet.next()) {
-        System.out.println(resultSet.getString(1) + " ");
-      }
-
-      // Prompts a user to enter a character name.
-      Scanner scanner = new Scanner(System.in);
-      System.out.print("Enter a character name from the list: ");
-      String characterName = scanner.nextLine();
-
-      // To check that the characterName exists in the list of characters
-      resultSet = statement.executeQuery("SELECT character_name FROM characters WHERE character_name = " + "\'" + characterName + "\'");
-
-      // If the resultSet does not have a next, then prompt the user to enter a name again.
-      if (!resultSet.next()) {
-        System.out.println("Invalid character name. Please enter a name from this list: ");
-        this.getCharacter();
-      }
-      else {
-        resultSet.beforeFirst();
-
-        // while the resultSet has a next, call the track_character() function using the valid
-        // inputted characterName.
-        while (resultSet.next()) {
-
-          resultSet = statement.executeQuery("CALL track_character(\'" + characterName + "\')");
-
-          ResultSetMetaData rsmd = resultSet.getMetaData();
-          int numberOfColumns = rsmd.getColumnCount();
-
-          // To print out the resultSet after inputting a certain character
-          while (resultSet.next()) {
-            for (int i = 1; i <= numberOfColumns; i += 1) {
-              System.out.print(resultSet.getString(i) + " ");
-            }
-            System.out.println(" ");
-          }
-
-        }
-      }
-
-    }
-    // Catch a SQLException if it occurs and prompt the user to enter a new character name.
-    catch (SQLException e) {
-      System.out.print("Invalid character name. Please enter a name from this list: \n");
-      this.getCharacter();
-    }
-
-    // To close the connection to the database and end the program.
-    try {
-      this.getConnection().close();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-  }
-
-  /**
-   * Connect to the DB and do some stuff
-   */
-  public static void main(String[] args) {
-    DBDemo app = new DBDemo();
-    app.promptUser();
-    app.getCharacter();
-    app.run();
-
-  }
 }
