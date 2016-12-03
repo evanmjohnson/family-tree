@@ -97,6 +97,9 @@ public final class Main {
     while (!exit);
   }
 
+  /**
+   * Calls any of the find operations that the user selects.
+   */
   private void find() {
     System.out.println("What do you want to find? A person, address, house, reunion," +
         "or relationship?");
@@ -128,7 +131,7 @@ public final class Main {
       }
     }
     else if (toFind.equalsIgnoreCase("relationship")) {
-      //TODO: find relationship
+      findRelationship();
     }
   }
 
@@ -214,7 +217,14 @@ public final class Main {
       Statement statement = this.getConnection().createStatement();
       ResultSet resultSet = statement.executeQuery("SELECT * FROM address WHERE house_id = " +
           "(SELECT house_id FROM (person JOIN house ON person_id = " + id + "))");
-      printResultSet(resultSet);
+      if (!resultSet.next()) {
+        System.out.println("Invalid address. Please re-enter.");
+        findAddress();
+      }
+      else {
+        resultSet.beforeFirst();
+        printResultSet(resultSet);
+      }
     }
     catch (SQLException e) {
       e.printStackTrace();
@@ -232,7 +242,14 @@ public final class Main {
     try {
       Statement statement = this.getConnection().createStatement();
       ResultSet resultSet = statement.executeQuery("SELECT * FROM house WHERE person_id = " + id);
-      printResultSet(resultSet);
+      if (!resultSet.next()) {
+        System.out.println("Invalid house. Please re-enter.");
+        findHouse();
+      }
+      else {
+        resultSet.beforeFirst();
+        printResultSet(resultSet);
+      }
     }
     catch (SQLException e) {
       e.printStackTrace();
@@ -250,7 +267,14 @@ public final class Main {
       Statement statement = this.getConnection().createStatement();
       ResultSet resultSet = statement.executeQuery("SELECT * FROM reunion WHERE reunion_date = " +
           "\'" + date + "\'");
-      printResultSet(resultSet);
+      if (!resultSet.next()) {
+        System.out.println("Invalid address. Please re-enter.");
+        findReunionFromDate();
+      }
+      else {
+        resultSet.beforeFirst();
+        printResultSet(resultSet);
+      }
     }
     catch (SQLException e) {
       e.printStackTrace();
@@ -272,7 +296,10 @@ public final class Main {
         System.out.println("Invalid head of house.");
         findReunionFromPerson();
       }
-      printResultSet(resultSet);
+      else {
+        resultSet.beforeFirst();
+        printResultSet(resultSet);
+      }
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -295,19 +322,48 @@ public final class Main {
           "(SELECT house_id FROM address WHERE" +
           "street = " + "\'" + street + "\' AND " + "city = " + "\'" + city + "\' AND " +
           "country = " + "\'" + country + "\')");
-      if (!resultSet.next())
+      if (!resultSet.next()) {
+        System.out.println("Invalid address. Please re-enter.");
+        findReunionFromAddress();
+      }
+      else {
+        resultSet.beforeFirst();
+        printResultSet(resultSet);
+      }
     } catch (SQLException e) {
       e.printStackTrace();
     }
   }
 
+  /**
+   * Finds and prints a reunion from the user's inputted occasion.
+   */
   private void findReunionFromOccasion() {
     Scanner scan = new Scanner(System.in);
     System.out.println("Enter the occasion of the reunion");
     String occasion = scan.nextLine();
-    //TODO: find reunion from occasion
+    try {
+      Statement statement = this.getConnection().createStatement();
+      ResultSet resultSet = statement.executeQuery("SELECT * FROM reunion WHERE occasion = " +
+          "\'" + occasion + "\'");
+      if (!resultSet.next()) {
+        System.out.println("Not a valid occasion. Please re-enter.");
+        findReunionFromOccasion();
+      }
+      else {
+        resultSet.beforeFirst();
+        printResultSet(resultSet);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 
+  /**
+   * Prints the given result set to standard out.
+   * @param resultSet the {@link ResultSet} to print
+   * @throws SQLException if the ResultSet is not valid
+   */
   private void printResultSet(ResultSet resultSet) throws SQLException {
     ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
     int numberOfColumns = resultSetMetaData.getColumnCount();
@@ -318,6 +374,49 @@ public final class Main {
       System.out.println();
     }
   }
+
+  /**
+   * Finds and prints the relationship between two people given their first names.
+   */
+  private void findRelationship() {
+    Scanner scan = new Scanner(System.in);
+    System.out.println("Enter the first name of the first person in the relationship.");
+    String person1 = scan.nextLine();
+    int id1 = 0;
+    try {
+      id1 = selectPersonFromFirstName(person1);
+    }
+    catch (IllegalArgumentException e) {
+      System.out.println("Invalid person.");
+      findRelationship();
+    }
+    System.out.println("Enter the first name of the second person in the relationship.");
+    String person2 = scan.nextLine();
+    int id2 = 0;
+    try {
+      id2 = selectPersonFromFirstName(person2);
+    }
+    catch (IllegalArgumentException e) {
+      System.out.println("Invalid person. Please re-enter both people.");
+      findRelationship();
+    }
+    try {
+      Statement statement = this.getConnection().createStatement();
+      ResultSet resultSet = statement.executeQuery("SELECT relationship FROM relationship WHERE" +
+          "person1_id = " + id1 + " AND person2_id = " + id2);
+      if (!resultSet.next()) {
+        System.out.println("Invalid relationship. Please re-enter.");
+        findRelationship();
+      }
+      else {
+        resultSet.beforeFirst();
+        System.out.println(person1 + " is " + person2 + "'s " + resultSet.getString(1) + ".");
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
 
   /**
    * Get a new database connection
