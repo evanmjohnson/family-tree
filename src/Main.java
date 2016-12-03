@@ -150,12 +150,7 @@ public final class Main {
     try {
       Statement statement = this.getConnection().createStatement();
       ResultSet resultSet = statement.executeQuery("SELECT * FROM person WHERE person_id =" + id);
-      ResultSetMetaData rsmd = resultSet.getMetaData();
-      int numColumns = rsmd.getColumnCount();
-      for (int i = 1; i <= numColumns; i++) {
-        System.out.print(resultSet.getString(i) + " ");
-      }
-      System.out.println();
+      printResultSet(resultSet);
     }
     catch (SQLException e) {
       e.printStackTrace();
@@ -219,14 +214,7 @@ public final class Main {
       Statement statement = this.getConnection().createStatement();
       ResultSet resultSet = statement.executeQuery("SELECT * FROM address WHERE house_id = " +
           "(SELECT house_id FROM (person JOIN house ON person_id = " + id + "))");
-      ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-      int numberOfColumns = resultSetMetaData.getColumnCount();
-      while(resultSet.next()) {
-        for (int i = 1; i <= numberOfColumns; i ++) {
-          System.out.println(resultSet.getString(i) + " ");
-        }
-        System.out.println();
-      }
+      printResultSet(resultSet);
     }
     catch (SQLException e) {
       e.printStackTrace();
@@ -244,31 +232,55 @@ public final class Main {
     try {
       Statement statement = this.getConnection().createStatement();
       ResultSet resultSet = statement.executeQuery("SELECT * FROM house WHERE person_id = " + id);
-      ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-      int numberOfColumns = resultSetMetaData.getColumnCount();
-      while(resultSet.next()) {
-        for (int i = 1; i <= numberOfColumns; i ++) {
-          System.out.println(resultSet.getString(i) + " ");
-        }
-        System.out.println();
-      }
+      printResultSet(resultSet);
     }
     catch (SQLException e) {
       e.printStackTrace();
     }
   }
 
+  /**
+   * Finds a prints a reunion from the user's inputted date.
+   */
   private void findReunionFromDate() {
-    //TODO: find reunion from date
+    System.out.println("What is the date of the reunion (YYYY-MM-DD)?");
+    Scanner scan = new Scanner(System.in);
+    String date = scan.nextLine();
+    try {
+      Statement statement = this.getConnection().createStatement();
+      ResultSet resultSet = statement.executeQuery("SELECT * FROM reunion WHERE reunion_date = " +
+          "\'" + date + "\'");
+      printResultSet(resultSet);
+    }
+    catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 
+  /**
+   * Finds and prints a reunion from the user's inputted first name.
+   */
   private void findReunionFromPerson() {
     System.out.println("What is the first name of the head of the household?");
     Scanner scan = new Scanner(System.in);
     String head = scan.next();
-    //TODO: find reunion from person
+    try {
+      Statement statement = this.getConnection().createStatement();
+      ResultSet resultSet = statement.executeQuery("SELECT * FROM reunion WHERE head_of_house =" +
+          "\'" + head + "\'");
+      if (!resultSet.next()) {
+        System.out.println("Invalid head of house.");
+        findReunionFromPerson();
+      }
+      printResultSet(resultSet);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 
+  /**
+   * Finds and prints a reunion from the user's inputted street, city, and country.
+   */
   private void findReunionFromAddress() {
     Scanner scan = new Scanner(System.in);
     System.out.println("What street is the reunion on?");
@@ -277,7 +289,16 @@ public final class Main {
     String city = scan.nextLine();
     System.out.println("What country is the reunion in?");
     String country = scan.nextLine();
-    //TODO: find reunion from address
+    try {
+      Statement statement = this.getConnection().createStatement();
+      ResultSet resultSet = statement.executeQuery("SELECT * FROM reunion WHERE house_id = " +
+          "(SELECT house_id FROM address WHERE" +
+          "street = " + "\'" + street + "\' AND " + "city = " + "\'" + city + "\' AND " +
+          "country = " + "\'" + country + "\')");
+      if (!resultSet.next())
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 
   private void findReunionFromOccasion() {
@@ -285,6 +306,17 @@ public final class Main {
     System.out.println("Enter the occasion of the reunion");
     String occasion = scan.nextLine();
     //TODO: find reunion from occasion
+  }
+
+  private void printResultSet(ResultSet resultSet) throws SQLException {
+    ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+    int numberOfColumns = resultSetMetaData.getColumnCount();
+    while(resultSet.next()) {
+      for (int i = 1; i <= numberOfColumns; i ++) {
+        System.out.println(resultSet.getString(i) + " ");
+      }
+      System.out.println();
+    }
   }
 
   /**
