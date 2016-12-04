@@ -45,6 +45,7 @@ CREATE TABLE relationship (
 DROP TABLE IF EXISTS reunion; 
 
 CREATE TABLE reunion ( 
+	reunion_id INT NOT NULL,
 	head_of_house INT NOT NULL, 
 		-- person_id
 	num_families_attending INT NOT NULL, 
@@ -52,7 +53,7 @@ CREATE TABLE reunion (
 		-- house_id
 	occasion varchar(45) DEFAULT NULL, 
     reunion_date DATE NOT NULL,
-	PRIMARY KEY (reunion_date, head_of_house),
+	PRIMARY KEY (reunion_id),
     CONSTRAINT reunion_host
     FOREIGN KEY(address) REFERENCES address(house_id)
     ON DELETE CASCADE ON UPDATE CASCADE, 
