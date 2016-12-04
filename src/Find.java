@@ -19,6 +19,10 @@ public class Find {
     this.connection = connection;
   }
 
+  /**
+   * Default method that delegates all specific find operations after the user selects
+   * "find" in the main menu.
+   */
   public void find() {
     System.out.println("What do you want to find? A person, address, house, reunion," +
         "or relationship?");
