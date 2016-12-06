@@ -23,8 +23,8 @@ public class Find {
    * "find" in the main menu.
    */
   public void find() {
-    System.out.println("What do you want to find? A person, address, house, reunion," +
-        "or relationship?");
+    System.out.print("What do you want to find? A person, address, house, reunion," +
+        "or relationship? ");
     Scanner scan = new Scanner(System.in);
     String toFind = scan.nextLine();
     if (toFind.equalsIgnoreCase("person")) {
@@ -64,17 +64,10 @@ public class Find {
     System.out.print("Enter the person's first name: ");
     Scanner scan = new Scanner(System.in);
     String person = scan.next();
-    int id = 0;
-    try {
-      id = Utils.selectPersonFromFirstName(person, this.connection);
-    }
-    catch (IllegalArgumentException e) {
-      System.out.println("Couldn't find that person.");
-      findPerson();
-    }
     try {
       Statement statement = this.connection.createStatement();
-      ResultSet resultSet = statement.executeQuery("SELECT * FROM person WHERE person_id =" + id);
+      ResultSet resultSet = statement.executeQuery("SELECT * FROM person WHERE first_name = " +
+          "\'" + person + "\'");
       Utils.printResultSet(resultSet);
     }
     catch (SQLException e) {

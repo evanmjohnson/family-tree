@@ -86,7 +86,7 @@ public final class Main {
     this.dbName = "familyTree";
     boolean exit = false;
     do {
-      System.out.println("Choose an operation: Find, Update, Insert, Delete, or Exit.");
+      System.out.print("Choose an operation: Find, Update, Insert, Delete, or Exit: ");
       String operation = scan.nextLine();
       try {
         if (operation.equalsIgnoreCase("find")) {
@@ -127,7 +127,6 @@ public final class Main {
     conn = DriverManager.getConnection("jdbc:mysql://"
         + this.serverName + ":" + this.portNumber + "/" + this.dbName
         + "?autoReconnect=true&useSSL=false", connectionProps);
-
     return conn;
   }
 

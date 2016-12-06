@@ -22,15 +22,8 @@ public class Utils {
     try {
       Statement statement = connection.createStatement();
       // count the number of people with this name
-      ResultSet count = statement.executeQuery("SELECT COUNT(*) FROM person WHERE first_name =" +
-          "\'" + firstName + "\'");
-      // select all of the people with this name
       ResultSet resultSet = statement.executeQuery("SELECT * FROM person WHERE first_name =" +
           "\'" + firstName + "\'");
-      // if there is only one person with this name, just return their ID
-      if (Integer.parseInt(count.getString(1)) == 1) {
-        id = Integer.parseInt(resultSet.getString(1));
-      }
       // if there are no people with this name, throw an exception.
       if (!resultSet.next()) {
         throw new IllegalArgumentException("Person doesn't exist.");
@@ -38,6 +31,7 @@ public class Utils {
       ResultSetMetaData rsmd = resultSet.getMetaData();
       int numberColumns = rsmd.getColumnCount();
       // print all of the people with this name
+      resultSet.beforeFirst();
       while (resultSet.next()) {
         for (int i = 1; i <= numberColumns; i++) {
           System.out.println(resultSet.getString(i) + " ");
@@ -64,7 +58,7 @@ public class Utils {
     int numberOfColumns = resultSetMetaData.getColumnCount();
     while(resultSet.next()) {
       for (int i = 1; i <= numberOfColumns; i ++) {
-        System.out.println(resultSet.getString(i) + " ");
+        System.out.println(resultSetMetaData.getColumnName(i) + ": " + resultSet.getString(i) + " ");
       }
       System.out.println();
     }
