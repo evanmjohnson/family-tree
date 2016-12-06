@@ -1,0 +1,10 @@
+person1_id,person2_id,relationship 
+1,2,husband
+2,1,wife 
+1,3,father
+3,1,son
+5,4,sister
+4,5,brother
+17,12,husband
+2,24,grandmother 
+1,50,unrelated
