@@ -1,13 +1,13 @@
 DROP DATABASE IF EXISTS familyTree;
-CREATE DATABASE  IF NOT EXISTS `familyTree`;
+CREATE DATABASE  IF NOT EXISTS familyTree;
 
 USE familyTree;
 
 DROP TABLE IF EXISTS person;
 
 CREATE TABLE person (
+	first_name varchar(45) NOT NULL, 
 	last_name varchar(45) NOT NULL, 
-    first_name varchar(45) NOT NULL, 
     DoB INT(4) NOT NULL, 
     DOD INT(4) DEFAULT NULL, 
     person_id INT NOT NULL AUTO_INCREMENT,
