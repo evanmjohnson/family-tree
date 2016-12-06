@@ -1,10 +1,10 @@
-person1_id,person2_id,relationship 
-1,2,husband
-2,1,wife 
-1,3,father
-3,1,son
-5,4,sister
-4,5,brother
-17,12,husband
-2,24,grandmother 
-1,50,unrelated
+person1_id,person2_id,relationship ,relation_id
+1,2,husband,1
+2,1,wife ,2
+1,3,father,3
+3,1,son,4
+5,4,sister,5
+4,5,brother,6
+17,12,husband,7
+2,24,grandmother ,8
+1,50,unrelated,9
