@@ -88,14 +88,25 @@ public final class Main {
     do {
       System.out.println("Choose an operation: Find, Update, Insert, Delete, or Exit.");
       String operation = scan.nextLine();
-      if (operation.equalsIgnoreCase("find")) {
-        try {
+      try {
+        if (operation.equalsIgnoreCase("find")) {
           Find find = new Find(this.getConnection());
           find.find();
         }
-        catch (SQLException e) {
-          e.printStackTrace();
+        else if (operation.equalsIgnoreCase("update")) {
+          Update update = new Update(this.getConnection());
+          update.update();
         }
+        else if (operation.equalsIgnoreCase("exit")) {
+          exit = true;
+        }
+        else {
+          System.out.println("Not a valid operation. Please try again.");
+          continue;
+        }
+      }
+      catch (SQLException e) {
+        e.printStackTrace();
       }
     }
     while (!exit);
