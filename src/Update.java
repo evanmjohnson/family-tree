@@ -18,6 +18,10 @@ public class Update {
     this.connection = connection;
   }
 
+  /**
+   * Default update method that is called after the user selects "update" in the main
+   * menu. Delegates all update operations to helper methods.
+   */
   public void update() {
     System.out.println("What do you want to update? A person, address, house, reunion," +
             "or relationship?");
@@ -42,7 +46,10 @@ public class Update {
     }
   }
 
-
+  /**
+   * Displays all of the entries in the person table and has the user select one
+   * from their ID, then updates the information that the user wants.
+   */
   private void updatePerson() {
     Statement statement = null;
     try {
@@ -89,6 +96,10 @@ public class Update {
 
   }
 
+  /**
+   * Shows all of the entries in the address table, and has the user select one based on
+   * its house_id, then updates the information that the user wants.
+   */
   private void updateAddress() {
     Statement statement = null;
     try {
@@ -129,6 +140,10 @@ public class Update {
 
   }
 
+  /**
+   * Shows all of the entries in the house table, and has the user select one based on
+   * its house_id, then updates the information that the user wants.
+   */
   private void updateHouse() {
     Statement statement = null;
     try {
@@ -170,7 +185,10 @@ public class Update {
 
   }
 
-
+  /**
+   * Shows all of the entries in the address table, and has the user select one based on
+   * its reunion_id, then updates the information that the user wants.
+   */
   private void updateReunion() {
     Statement statement = null;
     try {
@@ -223,6 +241,10 @@ public class Update {
     }
   }
 
+  /**
+   * Shows all of the entries in the relationship table, and has the user select one based on
+   * the id of the first person, then updates the information that the user wants.
+   */
   // TODO -- Fix so that all the people show up so you can enter a person's id
   private void updateRelationship() {
     Statement statement = null;
