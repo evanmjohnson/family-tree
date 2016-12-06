@@ -40,7 +40,7 @@ public class Utils {
         }
         System.out.println();
       }
-      System.out.print("Enter the ID of the person you want to select: ");
+      System.out.print("Enter the ID of the person you want: ");
       Scanner scan = new Scanner(System.in);
       id = scan.nextInt();
     }
