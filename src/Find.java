@@ -1,6 +1,5 @@
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
@@ -67,7 +66,7 @@ public class Find {
     String person = scan.next();
     int id = 0;
     try {
-      id = selectPersonFromFirstName(person);
+      id = Utils.selectPersonFromFirstName(person, this.connection);
     }
     catch (IllegalArgumentException e) {
       System.out.println("Couldn't find that person.");
@@ -76,56 +75,11 @@ public class Find {
     try {
       Statement statement = this.connection.createStatement();
       ResultSet resultSet = statement.executeQuery("SELECT * FROM person WHERE person_id =" + id);
-      Main.printResultSet(resultSet);
+      Utils.printResultSet(resultSet);
     }
     catch (SQLException e) {
       e.printStackTrace();
     }
-  }
-
-  /**
-   * Finds the ID of a person from their first name. If there is more than one person
-   * with this name, show a list of all of the people with this name and have the user
-   * select the ID of the person they want.
-   * @param firstName the first name of the person to select
-   * @return the ID of the person that the user wants to select
-   * @throws IllegalArgumentException if the person is not in the database
-   */
-  private int selectPersonFromFirstName(String firstName) throws IllegalArgumentException {
-    int id = 0;
-    try {
-      Statement statement = this.connection.createStatement();
-      // count the number of people with this name
-      ResultSet count = statement.executeQuery("SELECT COUNT(*) FROM person WHERE first_name =" +
-          "\'" + firstName + "\'");
-      // select all of the people with this name
-      ResultSet resultSet = statement.executeQuery("SELECT * FROM person WHERE first_name =" +
-          "\'" + firstName + "\'");
-      // if there is only one person with this name, just return their ID
-      if (Integer.parseInt(count.getString(1)) == 1) {
-        id = Integer.parseInt(resultSet.getString(1));
-      }
-      // if there are no people with this name, throw an exception.
-      if (!resultSet.next()) {
-        throw new IllegalArgumentException("Person doesn't exist.");
-      }
-      ResultSetMetaData rsmd = resultSet.getMetaData();
-      int numberColumns = rsmd.getColumnCount();
-      // print all of the people with this name
-      while (resultSet.next()) {
-        for (int i = 1; i <= numberColumns; i++) {
-          System.out.println(resultSet.getString(i) + " ");
-        }
-        System.out.println();
-      }
-      System.out.print("Enter the ID of the person you want to select: ");
-      Scanner scan = new Scanner(System.in);
-      id = scan.nextInt();
-    }
-    catch (SQLException e) {
-      e.printStackTrace();
-    }
-    return id;
   }
 
   /**
@@ -135,7 +89,7 @@ public class Find {
     Scanner scan = new Scanner(System.in);
     System.out.print("Enter the person's first name: ");
     String person = scan.next();
-    int id = selectPersonFromFirstName(person);
+    int id = Utils.selectPersonFromFirstName(person, this.connection);
     try {
       Statement statement = this.connection.createStatement();
       ResultSet resultSet = statement.executeQuery("SELECT * FROM address WHERE house_id = " +
@@ -146,7 +100,7 @@ public class Find {
       }
       else {
         resultSet.beforeFirst();
-        Main.printResultSet(resultSet);
+        Utils.printResultSet(resultSet);
       }
     }
     catch (SQLException e) {
@@ -161,7 +115,7 @@ public class Find {
     Scanner scan = new Scanner(System.in);
     System.out.print("Enter the person's first name: ");
     String person = scan.next();
-    int id = selectPersonFromFirstName(person);
+    int id = Utils.selectPersonFromFirstName(person, this.connection);
     try {
       Statement statement = this.connection.createStatement();
       ResultSet resultSet = statement.executeQuery("SELECT * FROM house WHERE person_id = " + id);
@@ -171,7 +125,7 @@ public class Find {
       }
       else {
         resultSet.beforeFirst();
-        Main.printResultSet(resultSet);
+        Utils.printResultSet(resultSet);
       }
     }
     catch (SQLException e) {
@@ -196,7 +150,7 @@ public class Find {
       }
       else {
         resultSet.beforeFirst();
-        Main.printResultSet(resultSet);
+        Utils.printResultSet(resultSet);
       }
     }
     catch (SQLException e) {
@@ -221,7 +175,7 @@ public class Find {
       }
       else {
         resultSet.beforeFirst();
-        Main.printResultSet(resultSet);
+        Utils.printResultSet(resultSet);
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -251,7 +205,7 @@ public class Find {
       }
       else {
         resultSet.beforeFirst();
-        Main.printResultSet(resultSet);
+        Utils.printResultSet(resultSet);
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -275,7 +229,7 @@ public class Find {
       }
       else {
         resultSet.beforeFirst();
-        Main.printResultSet(resultSet);
+        Utils.printResultSet(resultSet);
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -291,7 +245,7 @@ public class Find {
     String person1 = scan.nextLine();
     int id1 = 0;
     try {
-      id1 = selectPersonFromFirstName(person1);
+      id1 = Utils.selectPersonFromFirstName(person1, this.connection);
     }
     catch (IllegalArgumentException e) {
       System.out.println("Invalid person.");
@@ -301,7 +255,7 @@ public class Find {
     String person2 = scan.nextLine();
     int id2 = 0;
     try {
-      id2 = selectPersonFromFirstName(person2);
+      id2 = Utils.selectPersonFromFirstName(person2, this.connection);
     }
     catch (IllegalArgumentException e) {
       System.out.println("Invalid person. Please re-enter both people.");

@@ -1,7 +1,5 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
@@ -101,29 +99,6 @@ public final class Main {
       }
     }
     while (!exit);
-  }
-
-  /**
-   * Calls any of the find operations that the user selects.
-   */
-
-
-
-
-  /**
-   * Prints the given result set to standard out.
-   * @param resultSet the {@link ResultSet} to print
-   * @throws SQLException if the ResultSet is not valid
-   */
-  public static void printResultSet(ResultSet resultSet) throws SQLException {
-    ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-    int numberOfColumns = resultSetMetaData.getColumnCount();
-    while(resultSet.next()) {
-      for (int i = 1; i <= numberOfColumns; i ++) {
-        System.out.println(resultSet.getString(i) + " ");
-      }
-      System.out.println();
-    }
   }
 
   /**

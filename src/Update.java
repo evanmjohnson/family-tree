@@ -55,7 +55,7 @@ public class Update {
     try {
       statement = this.connection.createStatement();
       ResultSet resultSet = statement.executeQuery("SELECT * FROM person");
-      Main.printResultSet(resultSet);
+      Utils.printResultSet(resultSet);
       System.out.println("Select a person to update. Enter their id: ");
       Scanner scanner = new Scanner(System.in);
       String id = scanner.next();
@@ -105,7 +105,7 @@ public class Update {
     try {
       statement = this.connection.createStatement();
       ResultSet resultSet = statement.executeQuery("SELECT * FROM address");
-      Main.printResultSet(resultSet);
+      Utils.printResultSet(resultSet);
       System.out.println("Select an address to update. Enter its house_id: ");
       Scanner scanner = new Scanner(System.in);
       String id = scanner.next();
@@ -149,7 +149,7 @@ public class Update {
     try {
       statement = this.connection.createStatement();
       ResultSet resultSet = statement.executeQuery("SELECT * FROM house");
-      Main.printResultSet(resultSet);
+      Utils.printResultSet(resultSet);
       System.out.println("Select a house to update. Enter its house_id: ");
       Scanner scanner = new Scanner(System.in);
       String id = scanner.next();
@@ -194,7 +194,7 @@ public class Update {
     try {
       statement = this.connection.createStatement();
       ResultSet resultSet = statement.executeQuery("SELECT * FROM reunion");
-      Main.printResultSet(resultSet);
+      Utils.printResultSet(resultSet);
       System.out.println("Select a reunion to update. Enter its id: ");
       Scanner scanner = new Scanner(System.in);
       String id = scanner.nextLine();
@@ -251,7 +251,7 @@ public class Update {
     try {
       statement = this.connection.createStatement();
       ResultSet resultSet = statement.executeQuery("SELECT * FROM relationship");
-      Main.printResultSet(resultSet);
+      Utils.printResultSet(resultSet);
       System.out.println("Select a relationship to update. Enter its id: ");
       Scanner scanner = new Scanner(System.in);
       String id = scanner.nextLine();
