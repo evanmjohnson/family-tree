@@ -97,6 +97,10 @@ public final class Main {
           Update update = new Update(this.getConnection());
           update.update();
         }
+        else if (operation.equalsIgnoreCase("insert")) {
+          Insert insert = new Insert(this.getConnection());
+          insert.insert();
+        }
         else if (operation.equalsIgnoreCase("exit")) {
           exit = true;
         }
