@@ -1,4 +1,7 @@
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Scanner;
 
 /**
@@ -44,6 +47,24 @@ public class Insert {
   }
 
   private void insertPerson() {
+    System.out.println("Enter the first name of the new person: ");
+    Scanner scanner = new Scanner(System.in);
+    String newFirstName = scanner.next();
+    System.out.println("Enter the last name of the new person: ");
+    String newLast = scanner.next();
+    System.out.println("Enter the DOB of the new person (YYYY-MM-DD): ");
+    String newDOB = scanner.next();
+    System.out.println("Enter the DOD of the new person (YYYY-MM-DD): ");
+    String newDOD = scanner.next();
+    try {
+      Statement statement = connection.createStatement();
+      ResultSet resultSet1 = statement.executeQuery("SELECT MAX person_id FROM person");
+      int id = Integer.parseInt(resultSet1.getString(1));
+      ResultSet resultSet = statement.executeQuery("INSERT INTO person VALUES (" + "\'" + newLast + "\'"
+      + "\'" + newFirstName + "\'" + (id + 1)  +  "\'"  + newDOB + "\'" +  "\'" + newDOD +  "\'" );
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
 
   }
 
