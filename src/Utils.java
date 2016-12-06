@@ -9,6 +9,7 @@ import java.util.Scanner;
  * Contains methods that are useful to every class in the family-tree project.
  */
 public class Utils {
+  //TODO: make a string normailzation method
   /**
    * Finds the ID of a person from their first name. If there is more than one person
    * with this name, show a list of all of the people with this name and have the user
@@ -17,6 +18,7 @@ public class Utils {
    * @return the ID of the person that the user wants to select
    * @throws IllegalArgumentException if the person is not in the database
    */
+  //TODO: print column names
   static int selectPersonFromFirstName(String firstName, Connection connection) throws IllegalArgumentException {
     int id = 0;
     try {

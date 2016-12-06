@@ -37,7 +37,7 @@ public class Find {
       findHouse();
     }
     else if (toFind.equalsIgnoreCase("reunion")) {
-      System.out.println("Would you like to search by date, host, address, or occasion?");
+      System.out.print("Would you like to search by date, host, address, or occasion? ");
       String searchBy = scan.next();
       if (searchBy.equalsIgnoreCase("date")) {
         findReunionFromDate();
@@ -85,8 +85,9 @@ public class Find {
     int id = Utils.selectPersonFromFirstName(person, this.connection);
     try {
       Statement statement = this.connection.createStatement();
+      //TODO: this query doesn't work
       ResultSet resultSet = statement.executeQuery("SELECT * FROM address WHERE house_id = " +
-          "(SELECT house_id FROM (person JOIN house ON person_id = " + id + "))");
+          "(SELECT house_id FROM (person JOIN house ON person.person_id = " + id + "))");
       if (!resultSet.next()) {
         System.out.println("Invalid address. Please re-enter.");
         findAddress();
@@ -130,7 +131,7 @@ public class Find {
    * Finds a prints a reunion from the user's inputted date.
    */
   private void findReunionFromDate() {
-    System.out.println("What is the date of the reunion (YYYY-MM-DD)?");
+    System.out.print("What is the date of the reunion (YYYY-MM-DD)? ");
     Scanner scan = new Scanner(System.in);
     String date = scan.nextLine();
     try {
@@ -155,13 +156,13 @@ public class Find {
    * Finds and prints a reunion from the user's inputted first name.
    */
   private void findReunionFromPerson() {
-    System.out.println("What is the first name of the head of the household?");
+    System.out.print("What is the first name of the head of the household? ");
     Scanner scan = new Scanner(System.in);
     String head = scan.next();
     try {
       Statement statement = this.connection.createStatement();
-      ResultSet resultSet = statement.executeQuery("SELECT * FROM reunion WHERE head_of_house =" +
-          "\'" + head + "\'");
+      int id = Utils.selectPersonFromFirstName(head, connection);
+      ResultSet resultSet = statement.executeQuery("SELECT * FROM reunion WHERE head_of_house = " + id);
       if (!resultSet.next()) {
         System.out.println("Invalid head of house.");
         findReunionFromPerson();
@@ -180,18 +181,19 @@ public class Find {
    */
   private void findReunionFromAddress() {
     Scanner scan = new Scanner(System.in);
-    System.out.println("What street is the reunion on?");
+    System.out.print("What street is the reunion on? ");
     String street = scan.nextLine();
-    System.out.println("What city is the reunion in?");
+    System.out.print("What city is the reunion in? ");
     String city = scan.nextLine();
-    System.out.println("What country is the reunion in?");
+    System.out.print("What country is the reunion in? ");
     String country = scan.nextLine();
     try {
       Statement statement = this.connection.createStatement();
-      ResultSet resultSet = statement.executeQuery("SELECT * FROM reunion WHERE house_id = " +
-          "(SELECT house_id FROM address WHERE" +
+      String query = "SELECT * FROM reunion WHERE reunion.address = " +
+          "(SELECT house_id FROM address WHERE " +
           "street = " + "\'" + street + "\' AND " + "city = " + "\'" + city + "\' AND " +
-          "country = " + "\'" + country + "\')");
+          "country = " + "\'" + country + "\')";
+      ResultSet resultSet = statement.executeQuery(query);
       if (!resultSet.next()) {
         System.out.println("Invalid address. Please re-enter.");
         findReunionFromAddress();
@@ -210,7 +212,7 @@ public class Find {
    */
   private void findReunionFromOccasion() {
     Scanner scan = new Scanner(System.in);
-    System.out.println("Enter the occasion of the reunion");
+    System.out.print("Enter the occasion of the reunion: ");
     String occasion = scan.nextLine();
     try {
       Statement statement = this.connection.createStatement();
@@ -234,7 +236,7 @@ public class Find {
    */
   private void findRelationship() {
     Scanner scan = new Scanner(System.in);
-    System.out.println("Enter the first name of the first person in the relationship.");
+    System.out.print("Enter the first name of the first person in the relationship: ");
     String person1 = scan.nextLine();
     int id1 = 0;
     try {
@@ -244,7 +246,7 @@ public class Find {
       System.out.println("Invalid person.");
       findRelationship();
     }
-    System.out.println("Enter the first name of the second person in the relationship.");
+    System.out.print("Enter the first name of the second person in the relationship: ");
     String person2 = scan.nextLine();
     int id2 = 0;
     try {
@@ -256,14 +258,13 @@ public class Find {
     }
     try {
       Statement statement = this.connection.createStatement();
-      ResultSet resultSet = statement.executeQuery("SELECT relationship FROM relationship WHERE" +
+      ResultSet resultSet = statement.executeQuery("SELECT relationship FROM relationship WHERE " +
           "person1_id = " + id1 + " AND person2_id = " + id2);
       if (!resultSet.next()) {
         System.out.println("Invalid relationship. Please re-enter.");
         findRelationship();
       }
       else {
-        resultSet.beforeFirst();
         System.out.println(person1 + " is " + person2 + "'s " + resultSet.getString(1) + ".");
       }
     } catch (SQLException e) {
