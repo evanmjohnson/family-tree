@@ -1,3 +1,4 @@
+import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -15,6 +16,7 @@ public class Utils {
    * with this name, show a list of all of the people with this name and have the user
    * select the ID of the person they want.
    * @param firstName the first name of the person to select
+   * @param connection the connection with the database
    * @return the ID of the person that the user wants to select
    * @throws IllegalArgumentException if the person is not in the database
    */
@@ -64,5 +66,30 @@ public class Utils {
       }
       System.out.println();
     }
+  }
+
+  /**
+   * Gets a house ID of an address given a street
+   * @param street the street of the address
+   * @param connection the connection with the database
+   * @return the house ID of the house
+   */
+  static int getHouseIDFromStreet(String street, Connection connection) {
+    int id = 0;
+    try {
+      Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery("SELECT * FROM house WHERE house_id = " +
+          "(SELECT house_id FROM address WHERE street = \'" + street + "\')");
+      if (!resultSet.next()) {
+        throw new IllegalArgumentException("House doesn't exist.");
+      }
+      else {
+        id = Integer.parseInt(resultSet.getString(2));
+      }
+    }
+    catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return id;
   }
 }
