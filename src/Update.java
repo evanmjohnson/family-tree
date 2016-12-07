@@ -106,27 +106,28 @@ public class Update {
       statement = this.connection.createStatement();
       ResultSet resultSet = statement.executeQuery("SELECT * FROM address");
       Utils.printResultSet(resultSet);
-      System.out.println("Select an address to update. Enter its house_id: ");
+      System.out.print("Select an address to update. Enter its house_id: ");
       Scanner scanner = new Scanner(System.in);
       String id = scanner.next();
-      System.out.println("What do you want to update? Street, City, or Country?");
+      System.out.print("What do you want to update? Street, City, or Country? ");
       String field = scanner.next();
+      scanner.nextLine();
       if (field.equalsIgnoreCase("Street")) {
-        System.out.print("Enter the new street of the address you wish to update");
-        String newStreet = scanner.nextLine();
+        System.out.print("Enter the new street of the address you wish to update: ");
+        String newStreet = scanner.next();
         statement.executeUpdate("UPDATE address SET street = " + "\'" +
                 newStreet + "\'" + "WHERE house_id = " + id);
       }
       else if (field.equalsIgnoreCase("City")) {
         System.out.println("Enter the new city of the address you wish to update");
         String newCity = scanner.nextLine();
-        ResultSet resultSet1 = statement.executeQuery("UPDATE address SET city = " + "\'" +
+        statement.executeUpdate("UPDATE address SET city = " + "\'" +
                 newCity + "\'" + "WHERE house_id = " + id);
       }
       else if (field.equalsIgnoreCase("Country")) {
         System.out.println("Enter the new country of the address you wish to update");
         String newCountry = scanner.nextLine();
-        ResultSet resultSet1 = statement.executeQuery("UPDATE address SET country = " + "\'" +
+        statement.executeUpdate("UPDATE address SET country = " + "\'" +
                 newCountry + "\'" + "WHERE house_id = " + id);
       }
       else {
@@ -148,29 +149,31 @@ public class Update {
       statement = this.connection.createStatement();
       ResultSet resultSet = statement.executeQuery("SELECT * FROM house");
       Utils.printResultSet(resultSet);
-      System.out.println("Select a house to update. Enter its house_id: ");
+      System.out.print("Select a house to update. Enter its house_id: ");
       Scanner scanner = new Scanner(System.in);
       String id = scanner.next();
-      System.out.println("What do you want to update? Resident, Number of Residents, " +
-              "or Head of House?");
-      String field = scanner.nextLine();
+      System.out.print("What do you want to update? Resident, Number of Residents, " +
+              "or Head of House? ");
+      String field = scanner.next();
       if (field.equalsIgnoreCase("Resident")) {
-        System.out.println("Enter the new resident of the house you wish to update");
-        String newResident = scanner.nextLine();
-        ResultSet resultSet1 = statement.executeQuery("UPDATE house SET person_id = " + "\'" +
-                newResident + "\'" + "WHERE house_id = " + id);
+        System.out.println("Enter the first name of the new resident of the house you wish to update: ");
+        String firstName = scanner.next();
+        int personID = Utils.selectPersonFromFirstName(firstName, connection);
+        statement.executeUpdate("UPDATE house SET person_id = " + personID +
+            " WHERE house_id = " + id);
       }
-      else if (field.equalsIgnoreCase("Number of Residents")) {
+      else if (field.equalsIgnoreCase("Number")) {
         System.out.println("Enter the new number of residents of the house you wish to update");
-        String newNumResidents = scanner.nextLine();
-        ResultSet resultSet1 = statement.executeQuery("UPDATE house SET num_residents = " + "\'" +
-                newNumResidents + "\'" + "WHERE house_id = " + id);
+        int newNumResidents = scanner.nextInt();
+        statement.executeUpdate("UPDATE house SET num_residents = " +
+                newNumResidents + " WHERE house_id = " + id);
       }
-      else if (field.equalsIgnoreCase("Head of House")) {
-        System.out.println("Enter the new head of house of the house you wish to update");
-        String newHead = scanner.nextLine();
-        ResultSet resultSet1 = statement.executeQuery("UPDATE house SET head_of_house = " + "\'" +
-                newHead + "\'" + "WHERE house_id = " + id);
+      else if (field.equalsIgnoreCase("Head")) {
+        System.out.println("Enter the first name of the new head of house of the house you wish to update: ");
+        String firstName = scanner.next();
+        int personID = Utils.selectPersonFromFirstName(firstName, connection);
+        statement.executeUpdate("UPDATE house SET head_of_house = " +
+                personID + " WHERE house_id = " + id);
       }
       else {
         System.out.println("Field not identified. Enter again. ");
@@ -193,41 +196,44 @@ public class Update {
       statement = this.connection.createStatement();
       ResultSet resultSet = statement.executeQuery("SELECT * FROM reunion");
       Utils.printResultSet(resultSet);
-      System.out.println("Select a reunion to update. Enter its id: ");
+      System.out.print("Select a reunion to update. Enter its id: ");
       Scanner scanner = new Scanner(System.in);
       String id = scanner.next();
-      System.out.println("What do you want to update? Head of house, Number of families attending, " +
-              "address, or occasion or date?");
+      System.out.print("What do you want to update? Head of house, Number of families attending, " +
+              "address, occasion, or date? ");
       String field = scanner.next();
-      if (field.equalsIgnoreCase("Head of house")) {
-        System.out.println("Enter the new head of house of the reunion you wish to update");
-        String newHead = scanner.nextLine();
-        ResultSet resultSet1 = statement.executeQuery("UPDATE reunion SET head_of_house = " + "\'" +
-                newHead + "\'" + "WHERE reunion_id = " + "\'" + id + "\'");
+      if (field.equalsIgnoreCase("Head")) {
+        System.out.print("Enter the first name of the new head of house of the reunion you wish to update: ");
+        String firstName = scanner.next();
+        int personID = Utils.selectPersonFromFirstName(firstName, connection);
+        statement.executeUpdate("UPDATE reunion SET head_of_house = " +
+                personID + " WHERE reunion_id = " + "\'" + id + "\'");
       }
-      else if (field.equalsIgnoreCase("Number of families attending")) {
-        System.out.println("Enter the new number of families attending the reunion you wish to update");
-        String newNumFamiliesAttending = scanner.nextLine();
-        ResultSet resultSet1 = statement.executeQuery("UPDATE reunion SET num_families_attending = " + "\'" +
-                newNumFamiliesAttending + "\'" + "WHERE reunion_id = " + id);
+      else if (field.equalsIgnoreCase("Number")) {
+        System.out.println("Enter the new number of families attending the reunion you wish to update: ");
+        int newNumFamiliesAttending = scanner.nextInt();
+        statement.executeUpdate("UPDATE reunion SET num_families_attending = " +
+                newNumFamiliesAttending + " WHERE reunion_id = " + id);
       }
       else if (field.equalsIgnoreCase("address")) {
-        System.out.println("Enter the new address of the reunion you wish to update");
-        String newAddress = scanner.nextLine();
-        ResultSet resultSet1 = statement.executeQuery("UPDATE reunion SET address = " + "\'" +
-                newAddress + "\'" + "WHERE reunion_id = " + id);
+        System.out.print("What is the street of the new house that you want to update the reunion with? ");
+        scanner.useDelimiter("\\n");
+        String street = scanner.next();
+        int houseID = Utils.getHouseIDFromStreet(street, connection);
+        statement.executeUpdate("UPDATE reunion SET address = " +
+                houseID + " WHERE reunion_id = " + id);
       }
       else if (field.equalsIgnoreCase("occasion")) {
-        System.out.println("Enter the new occasion of the reunion you wish to update");
-        String newOccasion = scanner.nextLine();
-        ResultSet resultSet1 = statement.executeQuery("UPDATE reunion SET occasion = " + "\'" +
-                newOccasion + "\'" + "WHERE reunion_id = " + id);
+        System.out.print("Enter the new occasion of the reunion you wish to update: ");
+        String newOccasion = scanner.next();
+        statement.executeUpdate("UPDATE reunion SET occasion = " + "\'" +
+                newOccasion + "\'" + " WHERE reunion_id = " + id);
       }
       else if (field.equalsIgnoreCase("date")) {
-        System.out.println("Enter the new date of the reunion you wish to update(YYYY-MM-DD)");
-        String newDate = scanner.nextLine();
-        ResultSet resultSet1 = statement.executeQuery("UPDATE reunion SET date = " + "\'" +
-                newDate + "\'" + "WHERE reunion_id = " + id);
+        System.out.print("Enter the new date of the reunion you wish to update(YYYY-MM-DD)");
+        String newDate = scanner.next();
+        statement.executeUpdate("UPDATE reunion SET reunion_date = " + "\'" +
+                newDate + "\'" + " WHERE reunion_id = " + id);
       }
       else {
         System.out.println("Field not identified. Enter again. ");
@@ -249,30 +255,30 @@ public class Update {
       statement = this.connection.createStatement();
       ResultSet resultSet = statement.executeQuery("SELECT * FROM relationship");
       Utils.printResultSet(resultSet);
-      System.out.println("Select a relationship to update. Enter its id: ");
+      System.out.print("Select a relationship to update. Enter its id: ");
       Scanner scanner = new Scanner(System.in);
-      String id = scanner.nextLine();
-      System.out.println("What do you want to update? Person 1, Person 2, or the relationship?");
-      String field = scanner.nextLine();
-      if (field.equalsIgnoreCase("Person 1")) {
-        System.out.println("What is the first name of the person you want to update this relationship with?: ");
+      String id = scanner.next();
+      System.out.print("What do you want to update? Person1, Person2, or the relationship? ");
+      String field = scanner.next();
+      if (field.equalsIgnoreCase("Person1")) {
+        System.out.print("What is the first name of the person you want to update this relationship with?: ");
         String newPerson = scanner.next();
         int newID = Utils.selectPersonFromFirstName(newPerson, connection);
-        ResultSet resultSet1 = statement.executeQuery("UPDATE relationship SET person1_id = " + "\'" +
-                newID + "\'" + "WHERE relationship_id = " + "\'" + id + "\'");
+        statement.executeUpdate("UPDATE relationship SET person1_id = " +
+                newID + " WHERE relation_id = " + id);
       }
-      else if (field.equalsIgnoreCase("Person 2")) {
-        System.out.println("What is the first name of the person you want to update this relationship with?: ");
+      else if (field.equalsIgnoreCase("Person2")) {
+        System.out.print("What is the first name of the person you want to update this relationship with?: ");
         String newPerson = scanner.next();
         int newID = Utils.selectPersonFromFirstName(newPerson, connection);
-        ResultSet resultSet1 = statement.executeQuery("UPDATE relationship SET person2_id = " + "\'" +
-                newID + "\'" + "WHERE relationship_id = " + "\'" + id + "\'");
+        statement.executeUpdate("UPDATE relationship SET person2_id = " +
+                newID + " WHERE relation_id = " + id);
       }
       else if (field.equalsIgnoreCase("relationship")) {
         System.out.println("Enter the new relationship: ");
         String newRelationship = scanner.nextLine();
-        ResultSet resultSet1 = statement.executeQuery("UPDATE relationship SET relationship = " + "\'" +
-                newRelationship + "\'" + "WHERE relationship_id = " + id);
+        statement.executeUpdate("UPDATE relationship SET relationship = " +
+                newRelationship + " WHERE relation_id = " + id);
       }
       else {
         System.out.println("Field not identified. Enter again. ");
