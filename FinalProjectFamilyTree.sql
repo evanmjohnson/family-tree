@@ -179,9 +179,7 @@ INSERT INTO house VALUES (3,3,1,3);
 INSERT INTO house VALUES (17,4,7,17);
 INSERT INTO house VALUES (52,5,1,52);
 INSERT INTO house VALUES (52,6,1,50);
-
-
-    
+   
     
     
     
