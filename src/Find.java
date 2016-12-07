@@ -80,14 +80,17 @@ public class Find {
    */
   private void findAddress() {
     Scanner scan = new Scanner(System.in);
-    System.out.print("Enter the person's first name: ");
+    System.out.print("Enter the first name of the person that lives at the address you want to find: ");
     String person = scan.next();
     int id = Utils.selectPersonFromFirstName(person, this.connection);
+    System.out.print("Enter the first name of the head of house of the address you want to find: ");
+    String head = scan.next();
+    int headID = Utils.selectPersonFromFirstName(head, connection);
     try {
       Statement statement = this.connection.createStatement();
-      //TODO: this query doesn't work
       ResultSet resultSet = statement.executeQuery("SELECT * FROM address WHERE house_id = " +
-          "(SELECT house_id FROM (person JOIN house ON person.person_id = " + id + "))");
+          "(SELECT house_id FROM house WHERE person_id = " + id +
+          " AND head_of_house = " + headID + ")");
       if (!resultSet.next()) {
         System.out.println("Invalid address. Please re-enter.");
         findAddress();
