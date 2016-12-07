@@ -69,7 +69,7 @@ public class Utils {
   }
 
   /**
-   * Gets a house ID of an address given a street
+   * Gets a house ID of an address given a street.
    * @param street the street of the address
    * @param connection the connection with the database
    * @return the house ID of the house
@@ -91,5 +91,28 @@ public class Utils {
       e.printStackTrace();
     }
     return id;
+  }
+
+  /**
+   * Gets a house ID given a person's first name.
+   * @param firstName the first name of the person in the house
+   * @param connection a connection to the database
+   * @return the house_id of the house the user selects
+   */
+  static int getHouseIDFromPerson(String firstName, Connection connection) {
+    int personID = selectPersonFromFirstName(firstName, connection);
+    int houseID = 0;
+    try {
+      Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery("SELECT * FROM house WHERE person_id = " + personID);
+      printResultSet(resultSet);
+      System.out.print("Select the ID of the house you want: ");
+      Scanner scan = new Scanner(System.in);
+      houseID = scan.nextInt();
+    }
+    catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return houseID;
   }
 }

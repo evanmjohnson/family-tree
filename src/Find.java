@@ -64,7 +64,14 @@ public class Find {
     System.out.print("Enter the person's first name: ");
     Scanner scan = new Scanner(System.in);
     String person = scan.next();
-    int id = Utils.selectPersonFromFirstName(person, connection);
+    int id = 0;
+    try {
+      id = Utils.selectPersonFromFirstName(person, connection);
+    }
+    catch (IllegalArgumentException e) {
+      System.out.println("Person does not exist.");
+      findPerson();
+    }
     try {
       Statement statement = this.connection.createStatement();
       ResultSet resultSet = statement.executeQuery("SELECT * FROM person WHERE person_id = " + id);

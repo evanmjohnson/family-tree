@@ -66,14 +66,6 @@ public final class Main {
   private final String tableName = "JDBC_TEST";
 
   /**
-   * Connect to the DB and do some stuff
-   */
-  public static void main(String[] args) {
-    Main main = new Main();
-    main.promptUser();
-  }
-
-  /**
    * Prompts the user to enter their username and password and sets
    * the database to be used to starwarsfinal.
    */
@@ -101,6 +93,10 @@ public final class Main {
           Insert insert = new Insert(this.getConnection());
           insert.insert();
         }
+        else if (operation.equalsIgnoreCase("delete")) {
+          Delete delete = new Delete(this.getConnection());
+          delete.delete();
+        }
         else if (operation.equalsIgnoreCase("exit")) {
           exit = true;
         }
@@ -117,7 +113,7 @@ public final class Main {
   }
 
   /**
-   * Get a new database connection
+   * Get a new database connection.
    */
   public Connection getConnection() throws SQLException {
     Connection conn = null;
@@ -131,23 +127,10 @@ public final class Main {
   }
 
   /**
-   * Run a SQL command which does not return a recordset: CREATE/INSERT/UPDATE/DELETE/DROP/etc.
-   *
-   * @throws SQLException If something goes wrong
+   * Connect to the DB and run the program.
    */
-  public boolean executeUpdate(Connection conn, String command) throws SQLException {
-    Statement stmt = null;
-    try {
-      stmt = conn.createStatement();
-      stmt.executeUpdate(command); // This will throw a SQLException if it fails
-      return true;
-    } finally {
-
-      // This will run whether we throw an exception or not
-      if (stmt != null) {
-        stmt.close();
-      }
-    }
+  public static void main(String[] args) {
+    Main main = new Main();
+    main.promptUser();
   }
-
 }
